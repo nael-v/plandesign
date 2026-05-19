@@ -1,0 +1,56 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# next.js
+.next/
+out/
+
+# node/build artifacts
+build/
+dist/
+tmp/
+temp/
+*.tsbuildinfo
+
+# prisma local artifacts
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+prisma/*.db-journal
+
+# testing
+coverage/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.local.example
+!.env.example
+
+# deployment and local tooling
+.vercel/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+
+# certs/keys
+*.pem
