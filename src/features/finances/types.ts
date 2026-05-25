@@ -12,7 +12,7 @@ export type FinanceEntry = {
 export type InvoiceSummary = {
   id: string;
   number: string;
-  status: "draft" | "sent" | "paid" | "overdue";
+  status: "draft" | "sent" | "paid" | "overdue" | "canceled";
   amount?: number;
   clientName?: string;
   projectName?: string;
@@ -47,12 +47,20 @@ export type CreateInvoiceInput = {
 
 export type UpdateInvoiceStatusInput = {
   invoiceId: string;
-  status: "draft" | "sent" | "paid" | "overdue";
+  status: "draft" | "sent" | "paid" | "overdue" | "canceled";
 };
 
 export type CreateExpenseInput = {
   label: string;
-  category: string;
+  category:
+    | "materials"
+    | "labor"
+    | "logistics"
+    | "furniture"
+    | "permits"
+    | "equipment"
+    | "supplier_payment"
+    | "other";
   amount: number;
   occurredAt: string;
   clientId?: string;

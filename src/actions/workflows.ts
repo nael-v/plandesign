@@ -9,7 +9,11 @@ import {
   moveProjectTask,
   uploadProjectFile,
 } from "@/services/projects.service";
-import { createExpense, createInvoice, updateInvoiceStatus } from "@/services/finances.service";
+import {
+  createExpense as createFinancialExpense,
+  createInvoice as createFinancialInvoice,
+  updateInvoiceStatus as updateFinancialInvoiceStatus,
+} from "@/services/financials.service";
 import { markNotificationRead } from "@/services/activity.service";
 import { scheduleMeeting } from "@/services/meetings.service";
 
@@ -73,7 +77,7 @@ const financeInvoiceSchema = z.object({
 
 const invoiceStatusSchema = z.object({
   invoiceId: z.string().min(1),
-  status: z.enum(["draft", "sent", "paid", "overdue"]),
+  status: z.enum(["draft", "sent", "paid", "overdue", "canceled"]),
 });
 
 const expenseSchema = z.object({
@@ -188,7 +192,14 @@ export async function attachProjectSupplierAction(data: unknown) {
 export async function createInvoiceAction(data: unknown) {
   try {
     const input = financeInvoiceSchema.parse(data);
-    const result = await createInvoice(input);
+    const result = await createFinancialInvoice({
+      clientId: input.clientId,
+      projectId: input.projectId,
+      issueDate: new Date().toISOString(),
+      dueDate: input.dueAt,
+      subtotal: input.amount,
+      taxRate: 0,
+    });
     return { success: true, data: result };
   } catch (error) {
     return { success: false, error: toActionError(error) };
@@ -198,7 +209,7 @@ export async function createInvoiceAction(data: unknown) {
 export async function updateInvoiceStatusAction(data: unknown) {
   try {
     const input = invoiceStatusSchema.parse(data);
-    const result = await updateInvoiceStatus(input);
+    const result = await updateFinancialInvoiceStatus(input);
     return { success: true, data: result };
   } catch (error) {
     return { success: false, error: toActionError(error) };
@@ -208,7 +219,22 @@ export async function updateInvoiceStatusAction(data: unknown) {
 export async function createExpenseAction(data: unknown) {
   try {
     const input = expenseSchema.parse(data);
-    const result = await createExpense(input);
+    const result = await createFinancialExpense({
+      label: input.label,
+      category: input.category as
+        | "materials"
+        | "labor"
+        | "logistics"
+        | "furniture"
+        | "permits"
+        | "equipment"
+        | "supplier_payment"
+        | "other",
+      amount: input.amount,
+      occurredAt: input.occurredAt,
+      projectId: input.projectId,
+      notes: input.notes,
+    });
     return { success: true, data: result };
   } catch (error) {
     return { success: false, error: toActionError(error) };

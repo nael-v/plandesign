@@ -544,7 +544,7 @@ async function main() {
       create: {
         id: "seed-expense-2",
         label: "Site photography",
-        category: "consultants",
+        category: "labor",
         amount: 1850,
         occurredAt: new Date("2026-04-28"),
         clientId: clientB.id,
