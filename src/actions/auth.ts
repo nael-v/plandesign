@@ -3,7 +3,7 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
-import { db } from "@/lib/db";
+import { db } from "@/lib/server/db";
 
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required."),

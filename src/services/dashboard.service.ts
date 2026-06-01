@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@/lib/server/db";
 import type { DashboardSnapshot } from "@/features/dashboard";
 
 const STUBS: DashboardSnapshot = {

@@ -1,7 +1,7 @@
 ﻿"use server";
 
 import type { Prisma } from "@prisma/client";
-import { db } from "@/lib/db";
+import { db } from "@/lib/server/db";
 import type {
   CashFlowPoint,
   CreateExpenseInput,

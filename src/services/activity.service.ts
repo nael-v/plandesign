@@ -1,7 +1,7 @@
 "use server";
 
 import type { ActivityEntityType, ActivityEventType, NotificationType, Prisma } from "@prisma/client";
-import { db } from "@/lib/db";
+import { db } from "@/lib/server/db";
 
 type LogActivityInput = {
   eventType: ActivityEventType;

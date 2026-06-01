@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db } from "@/lib/server/db";
 import { logActivity } from "@/services/activity.service";
 
 type UploadAttachmentInput = {

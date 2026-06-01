@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 const PROTECTED_PATHS = [
   "/dashboard",
@@ -12,9 +12,13 @@ const PROTECTED_PATHS = [
 
 const AUTH_PATHS = ["/login", "/register"];
 
-export default auth((req) => {
+export default async function middleware(req: NextRequest) {
   const { nextUrl } = req;
-  const isLoggedIn = !!req.auth?.user;
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+  });
+  const isLoggedIn = Boolean(token);
 
   const isProtected = PROTECTED_PATHS.some((p) =>
     nextUrl.pathname.startsWith(p),
@@ -32,7 +36,7 @@ export default auth((req) => {
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],

@@ -1,9 +1,11 @@
+import "server-only";
+
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
-import { db } from "@/lib/db";
+import { db } from "@/lib/server/db";
 import type { UserRole } from "@/lib/auth/roles";
 
 const credentialsSchema = z.object({
@@ -22,8 +24,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.role = (user as { id: string; role: UserRole }).role;
+        if (user.id) token.id = user.id;
+        if ("role" in user && user.role) {
+          token.role = user.role as UserRole;
+        }
       }
       return token;
     },
