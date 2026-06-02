@@ -14,10 +14,18 @@ const AUTH_PATHS = ["/login", "/register"];
 
 export default async function middleware(req: NextRequest) {
   const { nextUrl } = req;
-  const token = await getToken({
-    req,
-    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
-  });
+  const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+  const secureCookie = process.env.NODE_ENV === "production";
+  const authJsCookieName = secureCookie
+    ? "__Secure-authjs.session-token"
+    : "authjs.session-token";
+  const token =
+    (await getToken({ req, secret })) ??
+    (await getToken({
+      req,
+      secret,
+      cookieName: authJsCookieName,
+    }));
   const isLoggedIn = Boolean(token);
 
   const isProtected = PROTECTED_PATHS.some((p) =>
