@@ -1,10 +1,15 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 import { auth, signOut } from "@/auth";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ROLE_LABELS } from "@/lib/auth/roles";
+import { LOCALE_COOKIE, normalizeLocale, t } from "@/lib/i18n";
 import { getUnreadNotificationCount } from "@/services/activity.service";
 
 export async function Topbar() {
+  const cookieStore = await cookies();
+  const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value ?? null);
   const [session, unreadCount] = await Promise.all([auth(), getUnreadNotificationCount()]);
   const user = session?.user;
 
@@ -13,16 +18,18 @@ export async function Topbar() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-            PlanDesign platform
+            {t(locale, "planDesignPlatform")}
           </p>
           <p className="mt-1 text-sm text-muted">
             {user?.name
-              ? `Welcome back, ${user.name}`
-              : "Role-aware SaaS layout for studio operations"}
+              ? t(locale, "welcomeBack", { name: user.name })
+              : t(locale, "roleAwareLayout")}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
+          <LanguageSwitcher initialLocale={locale} />
+
           {user ? (
             <div className="hidden items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-2 text-xs text-muted md:flex">
               <span className="font-medium text-foreground">{user.name ?? user.email}</span>
@@ -43,7 +50,7 @@ export async function Topbar() {
                 type="submit"
                 className="hidden rounded-full border border-border px-3 py-1.5 text-xs text-muted transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 md:inline-flex"
               >
-                Sign out
+                {t(locale, "signOut")}
               </button>
             </form>
           ) : (
@@ -51,7 +58,7 @@ export async function Topbar() {
               href="/login"
               className="rounded-full bg-slate-950 px-3 py-1.5 text-xs font-medium text-white"
             >
-              Sign in
+              {t(locale, "signIn")}
             </Link>
           )}
         </div>
@@ -62,22 +69,22 @@ export async function Topbar() {
           href="/dashboard"
           className="rounded-full bg-slate-950 px-3 py-1.5 font-medium text-white"
         >
-          Dashboard
+          {t(locale, "dashboard")}
         </Link>
         <span className="rounded-full border border-border px-3 py-1.5">
-          {unreadCount} unread notifications
+          {t(locale, "unreadNotifications", { count: unreadCount })}
         </span>
         <span className="rounded-full border border-border px-3 py-1.5">
-          Ctrl/Cmd + K command palette
+          {t(locale, "commandPalette")}
         </span>
         <span className="rounded-full border border-border px-3 py-1.5">
-          App Router
+          {t(locale, "appRouter")}
         </span>
         <span className="rounded-full border border-border px-3 py-1.5">
-          Prisma ready
+          {t(locale, "prismaReady")}
         </span>
         <span className="rounded-full border border-border px-3 py-1.5">
-          PostgreSQL ready
+          {t(locale, "postgresReady")}
         </span>
       </div>
     </header>

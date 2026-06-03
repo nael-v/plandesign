@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { markNotificationReadAction } from "@/actions/workflows";
 import { getUnreadNotificationCount, listNotifications } from "@/services/activity.service";
 import { Button } from "@/components/ui/button";
+import { AppLocale, formatDateTime, localizedValue } from "@/lib/i18n";
 
 function badgeClass(type: string) {
   if (type === "success") return "bg-emerald-50 text-emerald-700";
@@ -13,7 +14,11 @@ function badgeClass(type: string) {
   return "bg-blue-50 text-blue-700";
 }
 
-export function NotificationsCenter() {
+type NotificationsCenterProps = {
+  initialLocale: AppLocale;
+};
+
+export function NotificationsCenter({ initialLocale }: NotificationsCenterProps) {
   const queryClient = useQueryClient();
 
   const unreadQuery = useQuery({
@@ -42,10 +47,13 @@ export function NotificationsCenter() {
           ) : (
             <Bell className="h-5 w-5 text-muted" />
           )}
-          <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
+          <h3 className="text-sm font-semibold text-foreground">{localizedValue(initialLocale, { en: "Notifications", he: "התראות" })}</h3>
         </div>
         <span className="rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
-          {unreadQuery.data || 0} unread
+          {localizedValue(initialLocale, {
+            en: `${unreadQuery.data || 0} unread`,
+            he: `${unreadQuery.data || 0} לא נקראו`,
+          })}
         </span>
       </div>
 
@@ -61,7 +69,7 @@ export function NotificationsCenter() {
                   <p className="text-sm font-medium text-foreground">{notification.title}</p>
                   <p className="mt-1 text-xs text-muted">{notification.message}</p>
                   <p className="mt-1 text-[11px] text-muted">
-                    {new Date(notification.createdAt).toLocaleString()}
+                    {formatDateTime(initialLocale, notification.createdAt)}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-2">
@@ -76,7 +84,7 @@ export function NotificationsCenter() {
                       onClick={() => markReadMutation.mutate(notification.id)}
                     >
                       <Check className="h-3.5 w-3.5" />
-                      Mark read
+                      {localizedValue(initialLocale, { en: "Mark read", he: "סמן כנקרא" })}
                     </Button>
                   )}
                 </div>
@@ -85,7 +93,10 @@ export function NotificationsCenter() {
           ))
         ) : (
           <li className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted">
-            No notifications yet. Workflow events will appear here.
+            {localizedValue(initialLocale, {
+              en: "No notifications yet. Workflow events will appear here.",
+              he: "עדיין אין התראות. אירועי זרימת העבודה יופיעו כאן.",
+            })}
           </li>
         )}
       </ul>

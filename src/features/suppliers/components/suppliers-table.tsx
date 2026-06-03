@@ -21,16 +21,11 @@ import {
 import { listSuppliers } from "@/services/suppliers.service";
 import { SupplierFormDialog } from "@/features/suppliers/components/supplier-form-dialog";
 import type { SupplierCategory, SupplierListQuery, SupplierSummary } from "@/features/suppliers/types";
-
-const CATEGORY_LABELS: Record<SupplierCategory, string> = {
-  electrical: "Electrical",
-  furniture: "Furniture",
-  materials: "Materials",
-  plumbing: "Plumbing",
-  contractors: "Contractors",
-};
+import { localizedValue, localizeSupplierCategory } from "@/lib/i18n";
+import { useLocale } from "@/lib/use-locale";
 
 export function SuppliersTable() {
+  const { locale } = useLocale();
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -57,7 +52,7 @@ export function SuppliersTable() {
   if (suppliersQuery.isError) {
     return (
       <main className="mx-auto max-w-7xl px-4 py-10">
-        <EmptyState title="Error loading suppliers" description="Failed to load suppliers list." />
+        <EmptyState title={localizedValue(locale, { en: "Error loading suppliers", he: "שגיאה בטעינת ספקים" })} description={localizedValue(locale, { en: "Failed to load suppliers list.", he: "טעינת רשימת הספקים נכשלה." })} />
       </main>
     );
   }
@@ -66,12 +61,12 @@ export function SuppliersTable() {
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
       <SectionHeader
         eyebrow="Suppliers"
-        title="Procurement operations"
-        description="Manage supplier performance, project assignments, and procurement request lifecycles."
+        title={localizedValue(locale, { en: "Procurement operations", he: "תפעול רכש" })}
+        description={localizedValue(locale, { en: "Manage supplier performance, project assignments, and procurement request lifecycles.", he: "נהל ביצועי ספקים, שיוכי פרויקטים ומחזורי בקשות רכש." })}
         action={
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
-            New supplier
+            {localizedValue(locale, { en: "New supplier", he: "ספק חדש" })}
           </Button>
         }
       />
@@ -82,7 +77,7 @@ export function SuppliersTable() {
           <Input
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            placeholder="Search suppliers, cities, or contacts"
+            placeholder={localizedValue(locale, { en: "Search suppliers, cities, or contacts", he: "חפש ספקים, ערים או אנשי קשר" })}
             className="pl-10"
           />
         </div>
@@ -95,12 +90,12 @@ export function SuppliersTable() {
           }}
           className="h-11 rounded-2xl border border-border bg-background px-3 text-sm"
         >
-          <option value="">All categories</option>
-          <option value="electrical">Electrical</option>
-          <option value="furniture">Furniture</option>
-          <option value="materials">Materials</option>
-          <option value="plumbing">Plumbing</option>
-          <option value="contractors">Contractors</option>
+          <option value="">{localizedValue(locale, { en: "All categories", he: "כל הקטגוריות" })}</option>
+          <option value="electrical">{localizedValue(locale, { en: "Electrical", he: "חשמל" })}</option>
+          <option value="furniture">{localizedValue(locale, { en: "Furniture", he: "ריהוט" })}</option>
+          <option value="materials">{localizedValue(locale, { en: "Materials", he: "חומרים" })}</option>
+          <option value="plumbing">{localizedValue(locale, { en: "Plumbing", he: "אינסטלציה" })}</option>
+          <option value="contractors">{localizedValue(locale, { en: "Contractors", he: "קבלנים" })}</option>
         </select>
 
         <select
@@ -112,7 +107,7 @@ export function SuppliersTable() {
           }}
           className="h-11 rounded-2xl border border-border bg-background px-3 text-sm"
         >
-          <option value="">Any rating</option>
+          <option value="">{localizedValue(locale, { en: "Any rating", he: "כל דירוג" })}</option>
           <option value="2">2.0+</option>
           <option value="3">3.0+</option>
           <option value="4">4.0+</option>
@@ -123,13 +118,13 @@ export function SuppliersTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Supplier</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead className="text-right">Reliability</TableHead>
-              <TableHead className="text-right">Active requests</TableHead>
-              <TableHead className="text-right">Projects</TableHead>
-              <TableHead className="w-36 text-right">Actions</TableHead>
+              <TableHead>{localizedValue(locale, { en: "Supplier", he: "ספק" })}</TableHead>
+              <TableHead>{localizedValue(locale, { en: "Category", he: "קטגוריה" })}</TableHead>
+              <TableHead>{localizedValue(locale, { en: "Contact", he: "איש קשר" })}</TableHead>
+              <TableHead className="text-right">{localizedValue(locale, { en: "Reliability", he: "אמינות" })}</TableHead>
+              <TableHead className="text-right">{localizedValue(locale, { en: "Active requests", he: "בקשות פעילות" })}</TableHead>
+              <TableHead className="text-right">{localizedValue(locale, { en: "Projects", he: "פרויקטים" })}</TableHead>
+              <TableHead className="w-36 text-right">{localizedValue(locale, { en: "Actions", he: "פעולות" })}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -147,7 +142,7 @@ export function SuppliersTable() {
                 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="h-28">
-                      <EmptyState title="No suppliers found" description="Add suppliers to start procurement tracking." />
+                      <EmptyState title={localizedValue(locale, { en: "No suppliers found", he: "לא נמצאו ספקים" })} description={localizedValue(locale, { en: "Add suppliers to start procurement tracking.", he: "הוסף ספקים כדי להתחיל לעקוב אחר הרכש." })} />
                     </TableCell>
                   </TableRow>
                 )
@@ -163,7 +158,7 @@ export function SuppliersTable() {
                         <p className="text-xs text-muted">{supplier.city || "-"}</p>
                       </button>
                     </TableCell>
-                    <TableCell>{CATEGORY_LABELS[supplier.category]}</TableCell>
+                    <TableCell>{localizeSupplierCategory(locale, supplier.category)}</TableCell>
                     <TableCell>
                       <p className="text-sm">{supplier.email || "-"}</p>
                       <p className="text-xs text-muted">{supplier.phone || "-"}</p>
@@ -174,10 +169,10 @@ export function SuppliersTable() {
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button variant="ghost" size="sm" onClick={() => router.push(`/suppliers/${supplier.id}`)}>
-                          Open
+                          {localizedValue(locale, { en: "Open", he: "פתח" })}
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => setEditing(supplier)}>
-                          Edit
+                          {localizedValue(locale, { en: "Edit", he: "ערוך" })}
                         </Button>
                       </div>
                     </TableCell>

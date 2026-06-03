@@ -38,6 +38,17 @@ import {
 import type { ClientLifecycleSnapshot } from "@/features/crm/types";
 import { crmQueryKeys } from "@/features/crm/query-keys";
 import { publishCrmRealtimeEvent, useCrmRealtime } from "@/features/crm/realtime";
+import {
+  formatCurrency,
+  formatDate,
+  formatDateTime,
+  localizedValue,
+  localizeClientStatus,
+  localizeInvoiceStatus,
+  localizeProjectStage,
+  localizeProjectStatus,
+} from "@/lib/i18n";
+import { useLocale } from "@/lib/use-locale";
 
 const ActivityTimeline = dynamic(
   () => import("@/components/activity-timeline").then((module) => module.ActivityTimeline),
@@ -60,6 +71,7 @@ type ClientProfileWorkspaceProps = {
 };
 
 export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps) {
+  const { locale } = useLocale();
   const queryClient = useQueryClient();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const noteSectionRef = useRef<HTMLDivElement | null>(null);
@@ -163,16 +175,16 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       if (context?.previous) {
         queryClient.setQueryData(crmQueryKeys.lifecycle(clientId), context.previous);
       }
-      toast.error("Failed to update client profile");
+      toast.error(localizedValue(locale, { en: "Failed to update client profile", he: "עדכון פרופיל הלקוח נכשל" }));
     },
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || "Failed to update client profile");
+        toast.error(result.error || localizedValue(locale, { en: "Failed to update client profile", he: "עדכון פרופיל הלקוח נכשל" }));
         return;
       }
 
       setIsEditingProfile(false);
-      commonOnSuccess("Client profile updated");
+      commonOnSuccess(localizedValue(locale, { en: "Client profile updated", he: "פרופיל הלקוח עודכן" }));
     },
   });
 
@@ -216,16 +228,16 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       if (context?.previous) {
         queryClient.setQueryData(crmQueryKeys.lifecycle(clientId), context.previous);
       }
-      toast.error("Failed to add note");
+      toast.error(localizedValue(locale, { en: "Failed to add note", he: "הוספת הערה נכשלה" }));
     },
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || "Failed to add note");
+        toast.error(result.error || localizedValue(locale, { en: "Failed to add note", he: "הוספת הערה נכשלה" }));
         return;
       }
 
       noteForm.reset({ content: "" });
-      commonOnSuccess("Note added");
+      commonOnSuccess(localizedValue(locale, { en: "Note added", he: "הערה נוספה" }));
     },
   });
 
@@ -238,7 +250,7 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       }),
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || "Failed to schedule meeting");
+        toast.error(result.error || localizedValue(locale, { en: "Failed to schedule meeting", he: "תזמון הפגישה נכשל" }));
         return;
       }
       meetingForm.reset({
@@ -247,9 +259,9 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
         duration: 60,
         room: "",
       });
-      commonOnSuccess("Meeting scheduled");
+      commonOnSuccess(localizedValue(locale, { en: "Meeting scheduled", he: "הפגישה תוזמנה" }));
     },
-    onError: () => toast.error("Failed to schedule meeting"),
+    onError: () => toast.error(localizedValue(locale, { en: "Failed to schedule meeting", he: "תזמון הפגישה נכשל" })),
   });
 
   const relatedProjectMutation = useMutation({
@@ -257,13 +269,13 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       createClientRelatedProjectLifecycleAction({ clientId, ...values }),
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || "Failed to create project");
+        toast.error(result.error || localizedValue(locale, { en: "Failed to create project", he: "יצירת הפרויקט נכשלה" }));
         return;
       }
       projectForm.reset({ name: "" });
-      commonOnSuccess("Related project created");
+      commonOnSuccess(localizedValue(locale, { en: "Related project created", he: "הפרויקט הקשור נוצר" }));
     },
-    onError: () => toast.error("Failed to create project"),
+    onError: () => toast.error(localizedValue(locale, { en: "Failed to create project", he: "יצירת הפרויקט נכשלה" })),
   });
 
   const invoiceMutation = useMutation({
@@ -275,13 +287,13 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       }),
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || "Failed to create invoice");
+        toast.error(result.error || localizedValue(locale, { en: "Failed to create invoice", he: "יצירת החשבונית נכשלה" }));
         return;
       }
       invoiceForm.reset({ amount: 0, dueAt: undefined });
-      commonOnSuccess("Invoice created");
+      commonOnSuccess(localizedValue(locale, { en: "Invoice created", he: "החשבונית נוצרה" }));
     },
-    onError: () => toast.error("Failed to create invoice"),
+    onError: () => toast.error(localizedValue(locale, { en: "Failed to create invoice", he: "יצירת החשבונית נכשלה" })),
   });
 
   const uploadMutation = useMutation({
@@ -294,12 +306,12 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       }),
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || "Failed to upload file");
+        toast.error(result.error || localizedValue(locale, { en: "Failed to upload file", he: "העלאת הקובץ נכשלה" }));
         return;
       }
-      commonOnSuccess("Attachment uploaded");
+      commonOnSuccess(localizedValue(locale, { en: "Attachment uploaded", he: "הקובץ הועלה" }));
     },
-    onError: () => toast.error("Failed to upload file"),
+    onError: () => toast.error(localizedValue(locale, { en: "Failed to upload file", he: "העלאת הקובץ נכשלה" })),
   });
 
   const timelineItems = useMemo(() => {
@@ -309,10 +321,10 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       id: activity.id,
       label: activity.title,
       description: `${activity.description} • ${activity.actor}`,
-      timestamp: new Date(activity.createdAt).toLocaleString(),
+      timestamp: formatDateTime(locale, activity.createdAt),
       color: "blue" as const,
     }));
-  }, [lifecycleQuery.data?.activities]);
+  }, [locale, lifecycleQuery.data?.activities]);
 
   const isImageFile = (url: string, mimeType?: string) => {
     if (mimeType?.startsWith("image/")) return true;
@@ -329,7 +341,7 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
   }
 
   if (!lifecycleQuery.data) {
-    return <EmptyState title="Client not found" description="This client may have been removed." />;
+    return <EmptyState title={localizedValue(locale, { en: "Client not found", he: "הלקוח לא נמצא" })} description={localizedValue(locale, { en: "This client may have been removed.", he: "ייתכן שהלקוח הוסר." })} />;
   }
 
   const snapshot = lifecycleQuery.data;
@@ -340,24 +352,24 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-              {snapshot.client.status}
+              {localizeClientStatus(locale, snapshot.client.status)}
             </span>
-            <p className="text-sm text-muted">Quick actions</p>
+            <p className="text-sm text-muted">{localizedValue(locale, { en: "Quick actions", he: "פעולות מהירות" })}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" size="sm" onClick={() => setIsEditingProfile((value) => !value)}>
               <Edit3 className="mr-1.5 h-4 w-4" />
-              {isEditingProfile ? "Close edit" : "Edit profile"}
+              {isEditingProfile ? localizedValue(locale, { en: "Close edit", he: "סגור עריכה" }) : localizedValue(locale, { en: "Edit profile", he: "ערוך פרופיל" })}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => noteSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}>
-              Add note
+              {localizedValue(locale, { en: "Add note", he: "הוסף הערה" })}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => meetingSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}>
-              Schedule meeting
+              {localizedValue(locale, { en: "Schedule meeting", he: "תזמן פגישה" })}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => filesSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}>
               <UploadCloud className="mr-1.5 h-4 w-4" />
-              Upload files
+              {localizedValue(locale, { en: "Upload files", he: "העלה קבצים" })}
             </Button>
           </div>
         </div>
@@ -371,7 +383,7 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
               <p className="text-sm text-muted">{snapshot.client.email}</p>
             </div>
             <span className="mt-2 inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 sm:mt-0">
-              {snapshot.client.status}
+              {localizeClientStatus(locale, snapshot.client.status)}
             </span>
           </div>
         ) : (
@@ -380,32 +392,32 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
             onSubmit={profileForm.handleSubmit((values) => profileMutation.mutate(values))}
           >
             <div className="grid gap-2 md:col-span-2">
-              <Label htmlFor="profile-name">Client name</Label>
+              <Label htmlFor="profile-name">{localizedValue(locale, { en: "Client name", he: "שם לקוח" })}</Label>
               <Input id="profile-name" {...profileForm.register("name")} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="profile-email">Email</Label>
+              <Label htmlFor="profile-email">{localizedValue(locale, { en: "Email", he: "אימייל" })}</Label>
               <Input id="profile-email" type="email" {...profileForm.register("email")} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="profile-status">Status</Label>
+              <Label htmlFor="profile-status">{localizedValue(locale, { en: "Status", he: "סטטוס" })}</Label>
               <select
                 id="profile-status"
                 className="h-11 rounded-2xl border border-border bg-background px-3 text-sm"
                 {...profileForm.register("status")}
               >
-                <option value="prospect">Prospect</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="prospect">{localizedValue(locale, { en: "Prospect", he: "ליד" })}</option>
+                <option value="active">{localizedValue(locale, { en: "Active", he: "פעיל" })}</option>
+                <option value="inactive">{localizedValue(locale, { en: "Inactive", he: "לא פעיל" })}</option>
               </select>
             </div>
 
             <div className="md:col-span-4 flex justify-end gap-2">
               <Button type="button" variant="ghost" onClick={() => setIsEditingProfile(false)}>
-                Cancel
+                {localizedValue(locale, { en: "Cancel", he: "בטל" })}
               </Button>
               <Button type="submit" disabled={profileMutation.isPending}>
-                {profileMutation.isPending ? "Saving..." : "Save profile"}
+                {profileMutation.isPending ? localizedValue(locale, { en: "Saving...", he: "שומר..." }) : localizedValue(locale, { en: "Save profile", he: "שמור פרופיל" })}
               </Button>
             </div>
           </form>
@@ -416,34 +428,34 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
         <div ref={noteSectionRef} className="rounded-3xl border border-border bg-background p-5">
           <div className="mb-4 flex items-center gap-2">
             <NotebookPen className="h-4 w-4 text-blue-600" />
-            <h3 className="text-sm font-semibold text-foreground">Notes system</h3>
+            <h3 className="text-sm font-semibold text-foreground">{localizedValue(locale, { en: "Notes system", he: "מערכת הערות" })}</h3>
           </div>
 
           <form className="space-y-3" onSubmit={noteForm.handleSubmit((values) => addNoteMutation.mutate(values))}>
             <textarea
               className="min-h-20 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="Add note"
+              placeholder={localizedValue(locale, { en: "Add note", he: "הוסף הערה" })}
               {...noteForm.register("content")}
             />
             {noteForm.formState.errors.content && (
               <p className="text-xs text-red-600">{noteForm.formState.errors.content.message}</p>
             )}
             <Button type="submit" disabled={addNoteMutation.isPending}>
-              Save note
+              {localizedValue(locale, { en: "Save note", he: "שמור הערה" })}
             </Button>
           </form>
 
           <ul className="mt-4 space-y-2">
             {snapshot.notes.length === 0 && (
               <li className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted">
-                No notes yet.
+                {localizedValue(locale, { en: "No notes yet.", he: "עדיין אין הערות." })}
               </li>
             )}
             {snapshot.notes.map((note) => (
               <li key={note.id} className="rounded-2xl border border-border bg-surface p-3">
                 <p className="text-sm text-foreground">{note.content}</p>
                 <p className="mt-1 text-xs text-muted">
-                  {note.createdBy} • {new Date(note.createdAt).toLocaleString()}
+                  {note.createdBy} • {formatDateTime(locale, note.createdAt)}
                 </p>
               </li>
             ))}
@@ -453,21 +465,21 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
         <div ref={meetingSectionRef} className="rounded-3xl border border-border bg-background p-5">
           <div className="mb-4 flex items-center gap-2">
             <CalendarDays className="h-4 w-4 text-blue-600" />
-            <h3 className="text-sm font-semibold text-foreground">Meeting history</h3>
+            <h3 className="text-sm font-semibold text-foreground">{localizedValue(locale, { en: "Meeting history", he: "היסטוריית פגישות" })}</h3>
           </div>
 
           <form className="grid gap-3" onSubmit={meetingForm.handleSubmit((values) => meetingMutation.mutate(values))}>
-            <Input placeholder="Meeting title" {...meetingForm.register("title")} />
+            <Input placeholder={localizedValue(locale, { en: "Meeting title", he: "כותרת פגישה" })} {...meetingForm.register("title")} />
             <Input type="datetime-local" {...meetingForm.register("startsAt")} />
-            <Input type="number" placeholder="Duration (minutes)" {...meetingForm.register("duration", { valueAsNumber: true })} />
-            <Input placeholder="Room / location" {...meetingForm.register("room")} />
-            <Button type="submit" disabled={meetingMutation.isPending}>Schedule meeting</Button>
+            <Input type="number" placeholder={localizedValue(locale, { en: "Duration (minutes)", he: "משך (בדקות)" })} {...meetingForm.register("duration", { valueAsNumber: true })} />
+            <Input placeholder={localizedValue(locale, { en: "Room / location", he: "חדר / מיקום" })} {...meetingForm.register("room")} />
+            <Button type="submit" disabled={meetingMutation.isPending}>{localizedValue(locale, { en: "Schedule meeting", he: "תזמן פגישה" })}</Button>
           </form>
 
           <ul className="mt-4 space-y-2">
             {snapshot.meetings.length === 0 && (
               <li className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted">
-                No meetings scheduled yet.
+                {localizedValue(locale, { en: "No meetings scheduled yet.", he: "עדיין אין פגישות מתוזמנות." })}
               </li>
             )}
             {snapshot.meetings.map((meeting) => (
@@ -476,11 +488,11 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
                   <p className="font-medium text-foreground">{meeting.title}</p>
                   <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700">
                     <Clock3 className="h-3.5 w-3.5" />
-                    {meeting.duration}m
+                    {localizedValue(locale, { en: `${meeting.duration}m`, he: `${meeting.duration} דק'` })}
                   </span>
                 </div>
-                <p className="text-xs text-muted">{new Date(meeting.startsAt).toLocaleString()}</p>
-                {meeting.room && <p className="mt-1 text-xs text-muted">Location: {meeting.room}</p>}
+                <p className="text-xs text-muted">{formatDateTime(locale, meeting.startsAt)}</p>
+                {meeting.room && <p className="mt-1 text-xs text-muted">{localizedValue(locale, { en: "Location", he: "מיקום" })}: {meeting.room}</p>}
               </li>
             ))}
           </ul>
@@ -491,27 +503,27 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
         <div className="rounded-3xl border border-border bg-background p-5">
           <div className="mb-4 flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-blue-600" />
-            <h3 className="text-sm font-semibold text-foreground">Related projects</h3>
+            <h3 className="text-sm font-semibold text-foreground">{localizedValue(locale, { en: "Related projects", he: "פרויקטים קשורים" })}</h3>
           </div>
 
           <form className="space-y-3" onSubmit={projectForm.handleSubmit((values) => relatedProjectMutation.mutate(values))}>
-            <Input placeholder="Project name" {...projectForm.register("name")} />
-            <Button type="submit" disabled={relatedProjectMutation.isPending}>Create related project</Button>
+            <Input placeholder={localizedValue(locale, { en: "Project name", he: "שם פרויקט" })} {...projectForm.register("name")} />
+            <Button type="submit" disabled={relatedProjectMutation.isPending}>{localizedValue(locale, { en: "Create related project", he: "צור פרויקט קשור" })}</Button>
           </form>
 
           <ul className="mt-4 space-y-2">
             {snapshot.projects.length === 0 && (
               <li className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted">
-                No related projects yet.
+                {localizedValue(locale, { en: "No related projects yet.", he: "עדיין אין פרויקטים קשורים." })}
               </li>
             )}
             {snapshot.projects.map((project) => (
               <li key={project.id} className="rounded-2xl border border-border bg-surface p-3 text-sm">
                 <div className="flex items-center justify-between gap-3">
                   <p className="font-medium text-foreground">{project.name}</p>
-                  <Link href={`/projects`} className="text-xs text-blue-600 hover:underline">Open projects</Link>
+                  <Link href={`/projects`} className="text-xs text-blue-600 hover:underline">{localizedValue(locale, { en: "Open projects", he: "פתח פרויקטים" })}</Link>
                 </div>
-                <p className="text-xs text-muted">{project.stage} • {project.status}</p>
+                <p className="text-xs text-muted">{localizeProjectStage(locale, project.stage)} • {localizeProjectStatus(locale, project.status)}</p>
               </li>
             ))}
           </ul>
@@ -520,27 +532,27 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
         <div className="rounded-3xl border border-border bg-background p-5">
           <div className="mb-4 flex items-center gap-2">
             <Receipt className="h-4 w-4 text-blue-600" />
-            <h3 className="text-sm font-semibold text-foreground">Related invoices</h3>
+            <h3 className="text-sm font-semibold text-foreground">{localizedValue(locale, { en: "Related invoices", he: "חשבוניות קשורות" })}</h3>
           </div>
 
           <form className="space-y-3" onSubmit={invoiceForm.handleSubmit((values) => invoiceMutation.mutate(values))}>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="grid gap-2">
-                <Label htmlFor="invoice-amount">Amount</Label>
+                <Label htmlFor="invoice-amount">{localizedValue(locale, { en: "Amount", he: "סכום" })}</Label>
                 <Input id="invoice-amount" type="number" {...invoiceForm.register("amount", { valueAsNumber: true })} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="invoice-due">Due date</Label>
+                <Label htmlFor="invoice-due">{localizedValue(locale, { en: "Due date", he: "תאריך יעד" })}</Label>
                 <Input id="invoice-due" type="datetime-local" {...invoiceForm.register("dueAt")} />
               </div>
             </div>
-            <Button type="submit" disabled={invoiceMutation.isPending}>Generate invoice</Button>
+            <Button type="submit" disabled={invoiceMutation.isPending}>{localizedValue(locale, { en: "Generate invoice", he: "הפק חשבונית" })}</Button>
           </form>
 
           <ul className="mt-4 space-y-2">
             {snapshot.invoices.length === 0 && (
               <li className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted">
-                No invoices generated yet.
+                {localizedValue(locale, { en: "No invoices generated yet.", he: "עדיין לא נוצרו חשבוניות." })}
               </li>
             )}
             {snapshot.invoices.map((invoice) => (
@@ -548,11 +560,11 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-medium text-foreground">{invoice.number}</p>
                   <span className="rounded-full bg-amber-50 px-2 py-1 text-[11px] font-medium text-amber-700">
-                    {invoice.status}
+                    {localizeInvoiceStatus(locale, invoice.status)}
                   </span>
                 </div>
-                <p className="text-xs text-muted">${invoice.amount.toLocaleString()}</p>
-                {invoice.dueAt && <p className="mt-1 text-xs text-muted">Due: {new Date(invoice.dueAt).toLocaleDateString()}</p>}
+                <p className="text-xs text-muted">{formatCurrency(locale, invoice.amount)}</p>
+                {invoice.dueAt && <p className="mt-1 text-xs text-muted">{localizedValue(locale, { en: "Due", he: "לתשלום" })}: {formatDate(locale, invoice.dueAt)}</p>}
               </li>
             ))}
           </ul>
@@ -562,11 +574,11 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       <section ref={filesSectionRef} className="rounded-3xl border border-border bg-background p-5">
         <div className="mb-4 flex items-center gap-2">
           <FileText className="h-4 w-4 text-blue-600" />
-          <h3 className="text-sm font-semibold text-foreground">Client files</h3>
+          <h3 className="text-sm font-semibold text-foreground">{localizedValue(locale, { en: "Client files", he: "קבצי לקוח" })}</h3>
         </div>
 
         <FileDropzone
-          title="Drop client files, plan images, and PDFs"
+          title={localizedValue(locale, { en: "Drop client files, plan images, and PDFs", he: "שחרר קבצי לקוח, תמונות תוכנית וקבצי PDF" })}
           accept="image/*,.pdf"
           onUpload={async (file) => {
             await uploadMutation.mutateAsync(file);
@@ -576,7 +588,7 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
         <ul className="mt-4 space-y-2">
           {snapshot.files.length === 0 && (
             <li className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted">
-              No files uploaded yet.
+              {localizedValue(locale, { en: "No files uploaded yet.", he: "עדיין לא הועלו קבצים." })}
             </li>
           )}
           {snapshot.files.map((file) => (
@@ -599,7 +611,7 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
                 <div>
                   <p className="font-medium text-foreground">{file.name}</p>
                   <p className="text-xs text-muted">
-                    Uploaded by {file.uploadedBy}
+                    {localizedValue(locale, { en: "Uploaded by", he: "הועלה על ידי" })} {file.uploadedBy}
                     {file.size ? ` • ${Math.round(file.size / 1024)} KB` : ""}
                   </p>
                 </div>
@@ -610,7 +622,7 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
       </section>
 
       <section className="rounded-3xl border border-border bg-background p-5">
-        <ActivityTimeline title="Activity timeline" items={timelineItems} />
+        <ActivityTimeline title={localizedValue(locale, { en: "Activity timeline", he: "ציר זמן פעילות" })} items={timelineItems} />
         <div className="mt-4 flex justify-end">
           <Button
             type="button"
@@ -619,14 +631,14 @@ export function ClientProfileWorkspace({ clientId }: ClientProfileWorkspaceProps
             onClick={() => lifecycleQuery.refetch()}
             disabled={lifecycleQuery.isRefetching}
           >
-            {lifecycleQuery.isRefetching ? "Refreshing..." : "Refresh timeline"}
+            {lifecycleQuery.isRefetching ? localizedValue(locale, { en: "Refreshing...", he: "מרענן..." }) : localizedValue(locale, { en: "Refresh timeline", he: "רענן ציר זמן" })}
           </Button>
         </div>
         {timelineItems.length === 0 && (
           <div className="mt-4">
             <EmptyState
-              title="No activity events yet"
-              description="Add notes, files, meetings, projects, or invoices to build the timeline."
+              title={localizedValue(locale, { en: "No activity events yet", he: "עדיין אין אירועי פעילות" })}
+              description={localizedValue(locale, { en: "Add notes, files, meetings, projects, or invoices to build the timeline.", he: "הוסף הערות, קבצים, פגישות, פרויקטים או חשבוניות כדי לבנות את ציר הזמן." })}
             />
           </div>
         )}

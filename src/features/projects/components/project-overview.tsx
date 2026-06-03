@@ -2,14 +2,8 @@
 
 import { Building2, Calendar, DollarSign, MapPin, TrendingUp, Users } from "lucide-react";
 import type { ProjectDetail } from "@/features/projects/types";
-
-const STAGE_LABELS: Record<string, string> = {
-  discovery: "Discovery",
-  design: "Design",
-  approval: "Approval",
-  execution: "Execution",
-  handover: "Handover",
-};
+import { formatCurrency, formatDate, localizedValue, localizeProjectStage, localizeProjectStatus } from "@/lib/i18n";
+import { useLocale } from "@/lib/use-locale";
 
 const STAGE_COLORS: Record<string, string> = {
   discovery: "bg-violet-50 text-violet-700 ring-violet-200",
@@ -30,6 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
 type Props = { project: ProjectDetail };
 
 export function ProjectOverview({ project }: Props) {
+  const { locale } = useLocale();
   const budgetUsed = project.budget > 0 ? Math.min((project.spent / project.budget) * 100, 100) : 0;
   const isOverBudget = project.spent > project.budget;
 
@@ -40,12 +35,12 @@ export function ProjectOverview({ project }: Props) {
         <span
           className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${STAGE_COLORS[project.stage] ?? "bg-muted text-muted-foreground ring-border"}`}
         >
-          {STAGE_LABELS[project.stage] ?? project.stage}
+          {localizeProjectStage(locale, project.stage)}
         </span>
         <span
           className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_COLORS[project.status] ?? "bg-muted text-muted-foreground"}`}
         >
-          {project.status.replace("_", " ")}
+          {localizeProjectStatus(locale, project.status)}
         </span>
         {project.location && (
           <span className="inline-flex items-center gap-1 text-xs text-muted">
@@ -63,46 +58,49 @@ export function ProjectOverview({ project }: Props) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           icon={<TrendingUp className="h-4 w-4 text-emerald-600" />}
-          label="Progress"
+          label={localizedValue(locale, { en: "Progress", he: "התקדמות" })}
           value={`${project.progress}%`}
           sub={<ProgressBar value={project.progress} color="emerald" />}
         />
         <StatCard
           icon={<DollarSign className="h-4 w-4 text-blue-600" />}
-          label="Budget"
-          value={`$${(project.budget / 1000).toFixed(0)}k`}
+          label={localizedValue(locale, { en: "Budget", he: "תקציב" })}
+          value={formatCurrency(locale, project.budget, "USD", { notation: "compact" })}
           sub={
             <span className={`text-xs ${isOverBudget ? "text-red-600" : "text-muted"}`}>
-              ${(project.spent / 1000).toFixed(0)}k spent
+              {localizedValue(locale, {
+                en: `${formatCurrency(locale, project.spent, "USD", { notation: "compact" })} spent`,
+                he: `${formatCurrency(locale, project.spent, "USD", { notation: "compact" })} הוצאו`,
+              })}
             </span>
           }
         />
         <StatCard
           icon={<Users className="h-4 w-4 text-violet-600" />}
-          label="Team"
+          label={localizedValue(locale, { en: "Team", he: "צוות" })}
           value={String(project.members.length)}
-          sub={<span className="text-xs text-muted">members</span>}
+          sub={<span className="text-xs text-muted">{localizedValue(locale, { en: "members", he: "חברים" })}</span>}
         />
         <StatCard
           icon={<Building2 className="h-4 w-4 text-amber-600" />}
-          label="Tasks"
+          label={localizedValue(locale, { en: "Tasks", he: "משימות" })}
           value={String(project.tasks.length)}
-          sub={<span className="text-xs text-muted">total</span>}
+          sub={<span className="text-xs text-muted">{localizedValue(locale, { en: "total", he: "סה" + '"' + "כ" })}</span>}
         />
       </div>
 
       {/* Budget progress */}
       <div className="rounded-2xl border border-border bg-surface/50 p-4">
         <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="text-muted">Budget used</span>
+          <span className="text-muted">{localizedValue(locale, { en: "Budget used", he: "תקציב שנוצל" })}</span>
           <span className={`font-medium ${isOverBudget ? "text-red-600" : "text-foreground"}`}>
             {budgetUsed.toFixed(0)}%
           </span>
         </div>
         <ProgressBar value={budgetUsed} color={isOverBudget ? "red" : "blue"} />
         <div className="mt-2 flex justify-between text-xs text-muted">
-          <span>${project.spent.toLocaleString()} spent</span>
-          <span>${project.budget.toLocaleString()} budget</span>
+          <span>{localizedValue(locale, { en: `${formatCurrency(locale, project.spent)} spent`, he: `${formatCurrency(locale, project.spent)} הוצאו` })}</span>
+          <span>{localizedValue(locale, { en: `${formatCurrency(locale, project.budget)} budget`, he: `${formatCurrency(locale, project.budget)} תקציב` })}</span>
         </div>
       </div>
 
@@ -112,13 +110,13 @@ export function ProjectOverview({ project }: Props) {
           {project.startDate && (
             <span className="flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5" />
-              Started {new Date(project.startDate).toLocaleDateString()}
+              {localizedValue(locale, { en: "Started", he: "התחיל" })} {formatDate(locale, project.startDate)}
             </span>
           )}
           {project.endDate && (
             <span className="flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5" />
-              Due {new Date(project.endDate).toLocaleDateString()}
+              {localizedValue(locale, { en: "Due", he: "יעד" })} {formatDate(locale, project.endDate)}
             </span>
           )}
         </div>

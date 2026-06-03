@@ -15,10 +15,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { t } from "@/lib/i18n";
+import { useLocale } from "@/lib/use-locale";
 
 export default function LoginPage() {
   const router = useRouter();
   const callbackUrl = "/dashboard";
+  const { locale } = useLocale();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,13 +41,13 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password. Please try again.");
+        setError(t(locale, "invalidCredentials"));
       } else {
         router.push(callbackUrl);
         router.refresh();
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t(locale, "somethingWrong"));
     } finally {
       setPending(false);
     }
@@ -58,16 +61,16 @@ export default function LoginPage() {
             PlanDesign
           </span>
         </div>
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
+        <CardTitle className="text-2xl">{t(locale, "loginTitle")}</CardTitle>
         <CardDescription>
-          Sign in to your account to continue.
+          {t(locale, "loginDesc")}
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email">Email address</Label>
+            <Label htmlFor="email">{t(locale, "emailAddress")}</Label>
             <Input
               id="email"
               type="email"
@@ -80,7 +83,7 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t(locale, "password")}</Label>
             <Input
               id="password"
               type="password"
@@ -99,17 +102,17 @@ export default function LoginPage() {
           ) : null}
 
           <Button type="submit" className="w-full rounded-2xl" disabled={pending}>
-            {pending ? "Signing in…" : "Sign in"}
+            {pending ? t(locale, "signingIn") : t(locale, "signIn")}
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-muted">
-          Don&apos;t have an account?{" "}
+          {t(locale, "dontHaveAccount")} {" "}
           <Link
             href="/register"
             className="font-medium text-foreground hover:underline"
           >
-            Create one
+            {t(locale, "createOne")}
           </Link>
         </p>
       </CardContent>

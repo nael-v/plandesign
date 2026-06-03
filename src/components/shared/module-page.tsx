@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { AppLocale } from "@/lib/i18n";
+import { localizedValue } from "@/lib/i18n";
 
 type ModulePageProps = {
+  locale: AppLocale;
   eyebrow: string;
   title: string;
   description: string;
@@ -11,7 +14,7 @@ type ModulePageProps = {
   action?: ReactNode;
 };
 
-export function ModulePage({ eyebrow, title, description, highlights, roadmap, action }: ModulePageProps) {
+export function ModulePage({ locale, eyebrow, title, description, highlights, roadmap, action }: ModulePageProps) {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
       <section className="space-y-4">
@@ -28,8 +31,13 @@ export function ModulePage({ eyebrow, title, description, highlights, roadmap, a
       <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Key focus areas</CardTitle>
-            <CardDescription>What this module should own in a production SaaS architecture.</CardDescription>
+            <CardTitle>{localizedValue(locale, { en: "Key focus areas", he: "תחומי מיקוד מרכזיים" })}</CardTitle>
+            <CardDescription>
+              {localizedValue(locale, {
+                en: "What this module should own in a production SaaS architecture.",
+                he: "מה המודול הזה צריך להחזיק בתוך ארכיטקטורת SaaS ייצורית.",
+              })}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="grid gap-3 sm:grid-cols-2">
@@ -47,8 +55,13 @@ export function ModulePage({ eyebrow, title, description, highlights, roadmap, a
 
         <Card>
           <CardHeader>
-            <CardTitle>Recommended roadmap</CardTitle>
-            <CardDescription>How to evolve the module without collapsing the architecture.</CardDescription>
+            <CardTitle>{localizedValue(locale, { en: "Recommended roadmap", he: "מפת דרכים מומלצת" })}</CardTitle>
+            <CardDescription>
+              {localizedValue(locale, {
+                en: "How to evolve the module without collapsing the architecture.",
+                he: "איך לפתח את המודול בלי לפרק את הארכיטקטורה.",
+              })}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ol className="grid gap-3">

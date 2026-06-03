@@ -16,9 +16,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { registerUser } from "@/actions/auth";
+import { t } from "@/lib/i18n";
+import { useLocale } from "@/lib/use-locale";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { locale } = useLocale();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -32,7 +35,7 @@ export default function RegisterPage() {
     setError(null);
 
     if (password !== confirm) {
-      setError("Passwords do not match.");
+      setError(t(locale, "passwordsNoMatch"));
       return;
     }
 
@@ -67,21 +70,21 @@ export default function RegisterPage() {
             PlanDesign
           </span>
         </div>
-        <CardTitle className="text-2xl">Create your account</CardTitle>
+        <CardTitle className="text-2xl">{t(locale, "registerTitle")}</CardTitle>
         <CardDescription>
-          Join PlanDesign to manage your architectural projects.
+          {t(locale, "registerDesc")}
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="name">Full name</Label>
+            <Label htmlFor="name">{t(locale, "fullName")}</Label>
             <Input
               id="name"
               type="text"
               autoComplete="name"
-              placeholder="Your name"
+              placeholder={t(locale, "yourName")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -89,7 +92,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email address</Label>
+            <Label htmlFor="email">{t(locale, "emailAddress")}</Label>
             <Input
               id="email"
               type="email"
@@ -102,12 +105,12 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t(locale, "password")}</Label>
             <Input
               id="password"
               type="password"
               autoComplete="new-password"
-              placeholder="Min 8 characters"
+              placeholder={t(locale, "minEight")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -116,12 +119,12 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirm">Confirm password</Label>
+            <Label htmlFor="confirm">{t(locale, "confirmPassword")}</Label>
             <Input
               id="confirm"
               type="password"
               autoComplete="new-password"
-              placeholder="Repeat your password"
+              placeholder={t(locale, "repeatPassword")}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               required
@@ -139,17 +142,17 @@ export default function RegisterPage() {
             className="w-full rounded-2xl"
             disabled={isPending}
           >
-            {isPending ? "Creating account…" : "Create account"}
+            {isPending ? t(locale, "creatingAccount") : t(locale, "createAccount")}
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-muted">
-          Already have an account?{" "}
+          {t(locale, "alreadyHaveAccount")} {" "}
           <Link
             href="/login"
             className="font-medium text-foreground hover:underline"
           >
-            Sign in
+            {t(locale, "signIn")}
           </Link>
         </p>
       </CardContent>

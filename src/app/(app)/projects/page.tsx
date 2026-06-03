@@ -23,6 +23,8 @@ import { listProjects, getProjectsByStage } from "@/services/projects.service";
 import { deleteProjectAction } from "@/actions/projects";
 import { ProjectFormDialog } from "@/features/projects/components/project-form-dialog";
 import type { ProjectListQuery, ProjectSummary } from "@/features/projects/types";
+import { formatCurrency, localizedValue, localizeProjectStage, localizeProjectStatus } from "@/lib/i18n";
+import { useLocale } from "@/lib/use-locale";
 
 const STATUS_BADGES: Record<string, string> = {
   planning: "bg-slate-50 text-slate-700",
@@ -41,6 +43,7 @@ const STAGE_BADGES: Record<string, string> = {
 };
 
 export default function ProjectsPage() {
+  const { locale } = useLocale();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
@@ -81,11 +84,11 @@ export default function ProjectsPage() {
     },
     onError: (_e, _v, ctx) => {
       ctx?.previous?.forEach(([k, v]) => queryClient.setQueryData(k, v));
-      toast.error("Failed to delete project");
+      toast.error(localizedValue(locale, { en: "Failed to delete project", he: "מחיקת הפרויקט נכשלה" }));
     },
     onSuccess: (result) => {
-      if (!result.success) { toast.error(result.error || "Failed to delete project"); return; }
-      toast.success("Project deleted");
+      if (!result.success) { toast.error(result.error || localizedValue(locale, { en: "Failed to delete project", he: "מחיקת הפרויקט נכשלה" })); return; }
+      toast.success(localizedValue(locale, { en: "Project deleted", he: "הפרויקט נמחק" }));
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
@@ -93,7 +96,7 @@ export default function ProjectsPage() {
   if (error) {
     return (
       <main className="mx-auto max-w-7xl px-4 py-10">
-        <EmptyState title="Error loading projects" description="Failed to load the projects list." />
+        <EmptyState title={localizedValue(locale, { en: "Error loading projects", he: "שגיאה בטעינת פרויקטים" })} description={localizedValue(locale, { en: "Failed to load the projects list.", he: "טעינת רשימת הפרויקטים נכשלה." })} />
       </main>
     );
   }
@@ -102,12 +105,12 @@ export default function ProjectsPage() {
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
       <SectionHeader
         eyebrow="Projects"
-        title="Project management"
-        description="Track delivery timelines, budgets, team allocation, and project stages."
+        title={localizedValue(locale, { en: "Project management", he: "ניהול פרויקטים" })}
+        description={localizedValue(locale, { en: "Track delivery timelines, budgets, team allocation, and project stages.", he: "עקוב אחר לוחות זמנים, תקציבים, הקצאת צוות ושלבי פרויקט." })}
         action={
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
-            New project
+            {localizedValue(locale, { en: "New project", he: "פרויקט חדש" })}
           </Button>
         }
       />
@@ -116,31 +119,31 @@ export default function ProjectsPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
           <Input
-            placeholder="Search projects..."
+            placeholder={localizedValue(locale, { en: "Search projects...", he: "חפש פרויקטים..." })}
             className="pl-10"
             value={search}
-            aria-label="Search projects"
+            aria-label={localizedValue(locale, { en: "Search projects", he: "חיפוש פרויקטים" })}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           />
         </div>
         <select
           value={status ?? ""}
-          aria-label="Filter by status"
+          aria-label={localizedValue(locale, { en: "Filter by status", he: "סינון לפי סטטוס" })}
           onChange={(e) => { setStatus((e.target.value as ProjectSummary["status"]) || undefined); setPage(1); }}
           className="rounded-2xl border border-border bg-background px-3 py-2 text-sm text-foreground"
         >
-          <option value="">All statuses</option>
-          <option value="active">Active</option>
-          <option value="planning">Planning</option>
-          <option value="on_hold">On hold</option>
-          <option value="completed">Completed</option>
+          <option value="">{localizedValue(locale, { en: "All statuses", he: "כל הסטטוסים" })}</option>
+          <option value="active">{localizedValue(locale, { en: "Active", he: "פעיל" })}</option>
+          <option value="planning">{localizedValue(locale, { en: "Planning", he: "בתכנון" })}</option>
+          <option value="on_hold">{localizedValue(locale, { en: "On hold", he: "בהמתנה" })}</option>
+          <option value="completed">{localizedValue(locale, { en: "Completed", he: "הושלם" })}</option>
         </select>
-        <div className="flex gap-2" role="group" aria-label="View mode">
+        <div className="flex gap-2" role="group" aria-label={localizedValue(locale, { en: "View mode", he: "מצב תצוגה" })}>
           <Button variant={viewMode === "table" ? "default" : "ghost"} size="sm" aria-pressed={viewMode === "table"} onClick={() => setViewMode("table")}>
-            <ListIcon className="h-4 w-4" /><span className="sr-only">Table view</span>
+            <ListIcon className="h-4 w-4" /><span className="sr-only">{localizedValue(locale, { en: "Table view", he: "תצוגת טבלה" })}</span>
           </Button>
           <Button variant={viewMode === "kanban" ? "default" : "ghost"} size="sm" aria-pressed={viewMode === "kanban"} onClick={() => setViewMode("kanban")}>
-            <LayoutGrid className="h-4 w-4" /><span className="sr-only">Kanban view</span>
+            <LayoutGrid className="h-4 w-4" /><span className="sr-only">{localizedValue(locale, { en: "Kanban view", he: "תצוגת קנבן" })}</span>
           </Button>
         </div>
       </div>
@@ -150,13 +153,13 @@ export default function ProjectsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Project</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Stage</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Budget</TableHead>
-                <TableHead className="text-right">Progress</TableHead>
-                <TableHead className="w-36 text-right">Actions</TableHead>
+                <TableHead>{localizedValue(locale, { en: "Project", he: "פרויקט" })}</TableHead>
+                <TableHead>{localizedValue(locale, { en: "Client", he: "לקוח" })}</TableHead>
+                <TableHead>{localizedValue(locale, { en: "Stage", he: "שלב" })}</TableHead>
+                <TableHead>{localizedValue(locale, { en: "Status", he: "סטטוס" })}</TableHead>
+                <TableHead className="text-right">{localizedValue(locale, { en: "Budget", he: "תקציב" })}</TableHead>
+                <TableHead className="text-right">{localizedValue(locale, { en: "Progress", he: "התקדמות" })}</TableHead>
+                <TableHead className="w-36 text-right">{localizedValue(locale, { en: "Actions", he: "פעולות" })}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -172,7 +175,7 @@ export default function ProjectsPage() {
                   ? (
                     <TableRow>
                       <TableCell colSpan={7} className="h-32">
-                        <EmptyState title="No projects yet" description="Create your first project to get started." />
+                        <EmptyState title={localizedValue(locale, { en: "No projects yet", he: "עדיין אין פרויקטים" })} description={localizedValue(locale, { en: "Create your first project to get started.", he: "צור את הפרויקט הראשון שלך כדי להתחיל." })} />
                       </TableCell>
                     </TableRow>
                   )
@@ -184,32 +187,32 @@ export default function ProjectsPage() {
                       <TableCell className="text-sm text-muted">{project.clientName}</TableCell>
                       <TableCell>
                         <span className={`text-sm font-medium capitalize ${STAGE_BADGES[project.stage] ?? "text-foreground"}`}>
-                          {project.stage}
+                          {localizeProjectStage(locale, project.stage)}
                         </span>
                       </TableCell>
                       <TableCell>
                         <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${STATUS_BADGES[project.status]}`}>
-                          {project.status.replace("_", " ")}
+                          {localizeProjectStatus(locale, project.status)}
                         </span>
                       </TableCell>
                       <TableCell className="text-right text-sm font-medium tabular-nums">
-                        ${(project.budget / 1000).toFixed(0)}k
+                        {formatCurrency(locale, project.budget, "USD", { notation: "compact" })}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="ml-auto w-16">
                           <div className="h-1.5 overflow-hidden rounded-full bg-muted/50">
-                            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${project.progress}%` }} role="progressbar" aria-valuenow={project.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`${project.progress}% complete`} />
+                            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${project.progress}%` }} role="progressbar" aria-valuenow={project.progress} aria-valuemin={0} aria-valuemax={100} aria-label={localizedValue(locale, { en: `${project.progress}% complete`, he: `${project.progress}% הושלם` })} />
                           </div>
                           <span className="mt-0.5 block text-right text-xs text-muted">{project.progress}%</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => router.push(`/projects/${project.id}`)}>Open</Button>
-                          <Button variant="ghost" size="sm" onClick={() => setEditProject(project)}>Edit</Button>
+                          <Button variant="ghost" size="sm" onClick={() => router.push(`/projects/${project.id}`)}>{localizedValue(locale, { en: "Open", he: "פתח" })}</Button>
+                          <Button variant="ghost" size="sm" onClick={() => setEditProject(project)}>{localizedValue(locale, { en: "Edit", he: "ערוך" })}</Button>
                           <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700" disabled={deleteMutation.isPending}
-                            onClick={() => { if (confirm(`Delete "${project.name}"?`)) deleteMutation.mutate(project.id); }}>
-                            Delete
+                            onClick={() => { if (confirm(localizedValue(locale, { en: `Delete "${project.name}"?`, he: `למחוק את "${project.name}"?` })) ) deleteMutation.mutate(project.id); }}>
+                            {localizedValue(locale, { en: "Delete", he: "מחק" })}
                           </Button>
                         </div>
                       </TableCell>
@@ -240,11 +243,11 @@ export default function ProjectsPage() {
                     <div className="mt-3 h-1 overflow-hidden rounded-full bg-muted/50">
                       <div className="h-full rounded-full bg-blue-500" style={{ width: `${p.progress}%` }} />
                     </div>
-                    <p className="mt-1.5 text-xs text-muted">{p.progress}% · ${(p.budget / 1000).toFixed(0)}k</p>
+                    <p className="mt-1.5 text-xs text-muted">{p.progress}% · {formatCurrency(locale, p.budget, "USD", { notation: "compact" })}</p>
                   </button>
                 ))}
                 {col.projects.length === 0 && !kanbanQuery.isLoading && (
-                  <div className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted">No projects</div>
+                  <div className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted">{localizedValue(locale, { en: "No projects", he: "אין פרויקטים" })}</div>
                 )}
               </div>
             ))}

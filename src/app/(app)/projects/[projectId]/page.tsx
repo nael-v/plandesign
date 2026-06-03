@@ -1,13 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { ArrowLeft } from "lucide-react";
 import { getProjectById } from "@/services/projects.service";
 import { SectionHeader } from "@/components/shared/section-header";
 import { ProjectWorkspace } from "@/features/projects/components/project-workspace";
+import { LOCALE_COOKIE, localizedValue, localizeProjectStage, normalizeLocale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ projectId: string }> };
 
 export default async function ProjectWorkspacePage({ params }: Props) {
+  const cookieStore = await cookies();
+  const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value ?? null);
   const { projectId } = await params;
   const project = await getProjectById(projectId);
 
@@ -22,14 +26,14 @@ export default async function ProjectWorkspacePage({ params }: Props) {
           className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          Back to projects
+          {localizedValue(locale, { en: "Back to projects", he: "חזרה לפרויקטים" })}
         </Link>
       </nav>
 
       <SectionHeader
-        eyebrow={`${project.stage.charAt(0).toUpperCase() + project.stage.slice(1)} · ${project.clientName}`}
+        eyebrow={`${localizeProjectStage(locale, project.stage)} · ${project.clientName}`}
         title={project.name}
-        description="Project workspace — tasks, blueprints, team, timeline, and activity."
+        description={localizedValue(locale, { en: "Project workspace — tasks, blueprints, team, timeline, and activity.", he: "מרחב פרויקט: משימות, שרטוטים, צוות, ציר זמן ופעילות." })}
       />
 
       <ProjectWorkspace projectId={projectId} />
