@@ -49,7 +49,7 @@ export function LanguageSwitcher({ initialLocale }: LanguageSwitcherProps) {
         }`}
         aria-label={t(locale, "hebrew")}
       >
-        עב
+        HE
       </button>
     </div>
   );

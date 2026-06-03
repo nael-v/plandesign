@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MAIN_NAVIGATION } from "@/lib/constants/navigation";
 import { ROLE_LABELS, USER_ROLES } from "@/lib/auth/roles";
@@ -53,6 +54,10 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-end">
+        <LanguageSwitcher initialLocale={locale} />
+      </div>
+
       <section className="overflow-hidden rounded-3xl border border-border bg-surface/90 p-8 shadow-[0_24px_90px_-50px_rgba(15,23,42,0.45)] backdrop-blur sm:p-10">
         <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr] lg:items-end">
           <div className="space-y-6">
