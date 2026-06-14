@@ -30,24 +30,26 @@ export function LanguageSwitcher({ initialLocale }: LanguageSwitcherProps) {
   }
 
   return (
-    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-background/70 p-1">
+    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-surface/95 p-1 shadow-sm">
       <button
         type="button"
         onClick={() => changeLocale("en")}
-        className={`rounded-full px-2.5 py-1 text-xs transition-colors ${
+        className={`rounded-full px-3 py-1.5 text-xs font-semibold tracking-[0.08em] transition-colors ${
           locale === "en" ? "bg-slate-900 text-white" : "text-muted hover:bg-slate-100"
         }`}
         aria-label={t(locale, "english")}
+        disabled={pending}
       >
         EN
       </button>
       <button
         type="button"
         onClick={() => changeLocale("he")}
-        className={`rounded-full px-2.5 py-1 text-xs transition-colors ${
+        className={`rounded-full px-3 py-1.5 text-xs font-semibold tracking-[0.08em] transition-colors ${
           locale === "he" ? "bg-slate-900 text-white" : "text-muted hover:bg-slate-100"
         }`}
         aria-label={t(locale, "hebrew")}
+        disabled={pending}
       >
         HE
       </button>

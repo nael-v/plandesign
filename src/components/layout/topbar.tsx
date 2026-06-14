@@ -10,13 +10,14 @@ import { getUnreadNotificationCount } from "@/services/activity.service";
 export async function Topbar() {
   const cookieStore = await cookies();
   const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value ?? null);
+  const isHebrew = locale === "he";
   const [session, unreadCount] = await Promise.all([auth(), getUnreadNotificationCount()]);
   const user = session?.user;
 
   return (
-    <header className="flex flex-col gap-4 border-b border-border bg-surface/75 px-4 py-4 backdrop-blur sm:px-6 lg:px-8 xl:px-10">
-      <div className="flex items-center justify-between gap-4">
-        <div>
+    <header className="flex flex-col gap-4 border-b border-border bg-surface/85 px-4 py-4 backdrop-blur sm:px-6 lg:px-8 xl:px-10">
+      <div className={`flex items-center justify-between gap-4 ${isHebrew ? "text-right" : "text-left"}`}>
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
             {t(locale, "planDesignPlatform")}
           </p>
@@ -64,7 +65,7 @@ export async function Topbar() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
+      <div className={`flex flex-wrap items-center gap-2 text-sm text-muted ${isHebrew ? "justify-end" : "justify-start"}`}>
         <Link
           href="/dashboard"
           className="rounded-full bg-slate-950 px-3 py-1.5 font-medium text-white"

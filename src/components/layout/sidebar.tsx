@@ -49,16 +49,19 @@ const NAV_TRANSLATIONS: Record<
 export function Sidebar({ initialLocale }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { locale } = useLocale(initialLocale);
+  const isHebrew = locale === "he";
 
   return (
     <motion.aside
       initial={{ width: isCollapsed ? "5rem" : "18rem" }}
       animate={{ width: isCollapsed ? "5rem" : "18rem" }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="hidden xl:flex fixed left-0 top-0 h-full flex-col border-r border-border bg-surface overflow-hidden"
+      className={`fixed top-0 hidden h-full flex-col overflow-hidden border-border bg-surface xl:flex ${
+        isHebrew ? "right-0 border-l" : "left-0 border-r"
+      }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-6 border-b border-border shrink-0">
+      <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-6">
         <AnimatePresence mode="wait">
           {!isCollapsed && (
             <motion.div
@@ -66,25 +69,29 @@ export function Sidebar({ initialLocale }: SidebarProps) {
               animate={{ opacity: 1, width: "auto" }}
               exit={{ opacity: 0, width: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center gap-2 min-w-0"
+              className="flex min-w-0 items-center gap-2"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-500 text-white font-bold text-sm shrink-0">
                 PD
               </div>
-              <span className="text-sm font-semibold text-foreground truncate">PlanDesign</span>
+              <span className="truncate text-sm font-semibold text-foreground">PlanDesign</span>
             </motion.div>
           )}
         </AnimatePresence>
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="rounded-lg p-1.5 hover:bg-surface-elevated transition-colors duration-200 shrink-0 ml-2"
+          className={`shrink-0 rounded-lg p-1.5 transition-colors duration-200 hover:bg-surface-elevated ${
+            isHebrew ? "mr-2" : "ml-2"
+          }`}
           title={isCollapsed ? t(locale, "expand") : t(locale, "collapse")}
         >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4 text-muted" />
-          ) : (
-            <ChevronLeft className="h-4 w-4 text-muted" />
-          )}
+          {isCollapsed
+            ? isHebrew
+              ? <ChevronLeft className="h-4 w-4 text-muted" />
+              : <ChevronRight className="h-4 w-4 text-muted" />
+            : isHebrew
+              ? <ChevronRight className="h-4 w-4 text-muted" />
+              : <ChevronLeft className="h-4 w-4 text-muted" />}
         </button>
       </div>
 
@@ -96,7 +103,7 @@ export function Sidebar({ initialLocale }: SidebarProps) {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="px-4 py-3 text-xs text-muted border-b border-border"
+            className={`border-b border-border px-4 py-3 text-xs text-muted ${isHebrew ? "text-right" : "text-left"}`}
           >
             {t(locale, "enterpriseArchitecture")}
           </motion.div>
@@ -116,6 +123,7 @@ export function Sidebar({ initialLocale }: SidebarProps) {
               href={item.href}
               className={cn(
                 "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200",
+                isHebrew ? "flex-row-reverse" : "flex-row",
                 "hover:bg-surface-elevated",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               )}
@@ -134,7 +142,7 @@ export function Sidebar({ initialLocale }: SidebarProps) {
                     animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="min-w-0"
+                    className={`min-w-0 ${isHebrew ? "text-right" : "text-left"}`}
                   >
                     <div className="text-sm font-medium text-foreground truncate">{label}</div>
                     <div className="text-xs text-muted truncate">{moduleLabel}</div>
@@ -156,7 +164,7 @@ export function Sidebar({ initialLocale }: SidebarProps) {
             transition={{ duration: 0.2 }}
             className="border-t border-border px-3 py-4"
           >
-            <div className="rounded-lg border border-border bg-surface-elevated px-4 py-3 text-xs leading-5 text-muted">
+            <div className={`rounded-lg border border-border bg-surface-elevated px-4 py-3 text-xs leading-5 text-muted ${isHebrew ? "text-right" : "text-left"}`}>
               {t(locale, "sidebarFooter")}
             </div>
           </motion.div>

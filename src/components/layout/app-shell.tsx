@@ -12,13 +12,14 @@ type AppShellProps = {
 export async function AppShell({ children }: AppShellProps) {
   const cookieStore = await cookies();
   const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value ?? null);
+  const isHebrew = locale === "he";
 
   return (
     <>
       <CommandPalette />
       <div className="min-h-screen flex">
         <Sidebar initialLocale={locale} />
-        <div className="flex flex-1 flex-col min-w-0 ml-0 xl:ml-[18rem]">
+        <div className={`flex min-w-0 flex-1 flex-col ${isHebrew ? "mr-0 xl:mr-[18rem]" : "ml-0 xl:ml-[18rem]"}`}>
           <Topbar />
           <div className="flex-1 overflow-hidden">{children}</div>
         </div>

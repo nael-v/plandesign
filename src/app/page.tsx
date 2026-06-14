@@ -51,16 +51,22 @@ const ROLE_COPY: Record<string, { en: string; he: string }> = {
 export default async function Home() {
   const cookieStore = await cookies();
   const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value ?? null);
+  const isHebrew = locale === "he";
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-end">
-        <LanguageSwitcher initialLocale={locale} />
+      <div className={`flex items-center ${isHebrew ? "justify-start" : "justify-end"}`}>
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/90 px-3 py-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
+            {localizedValue(locale, { en: "Language", he: "שפה" })}
+          </span>
+          <LanguageSwitcher initialLocale={locale} />
+        </div>
       </div>
 
-      <section className="overflow-hidden rounded-3xl border border-border bg-surface/90 p-8 shadow-[0_24px_90px_-50px_rgba(15,23,42,0.45)] backdrop-blur sm:p-10">
+      <section className="overflow-hidden rounded-3xl border border-border bg-surface/95 p-8 shadow-[0_30px_90px_-55px_rgba(11,18,32,0.55)] backdrop-blur sm:p-10">
         <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr] lg:items-end">
-          <div className="space-y-6">
+          <div className={`space-y-6 ${isHebrew ? "text-right" : "text-left"}`}>
             <div className="inline-flex rounded-full border border-border bg-surface-elevated px-4 py-1 text-xs font-medium uppercase tracking-[0.28em] text-muted">
               {localizedValue(locale, { en: "Enterprise SaaS foundation", he: "תשתית SaaS ארגונית" })}
             </div>
@@ -79,7 +85,7 @@ export default async function Home() {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className={`flex flex-wrap gap-3 ${isHebrew ? "justify-end" : "justify-start"}`}>
               <Link
                 href="/dashboard"
                 className="inline-flex h-11 items-center justify-center rounded-full bg-slate-950 px-5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
@@ -95,7 +101,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <Card className="border-border bg-surface-elevated/80">
+          <Card className="border-border bg-surface-elevated/85">
             <CardHeader>
               <CardTitle>{localizedValue(locale, { en: "Role model", he: "מודל תפקידים" })}</CardTitle>
               <CardDescription>
@@ -134,8 +140,8 @@ export default async function Home() {
         ))}
       </section>
 
-      <section className="rounded-3xl border border-border bg-background p-6 sm:p-8">
-        <div className="mb-5">
+      <section className="rounded-3xl border border-border bg-background/90 p-6 sm:p-8">
+        <div className={`mb-5 ${isHebrew ? "text-right" : "text-left"}`}>
           <h2 className="text-2xl font-semibold text-foreground">{localizedValue(locale, { en: "Studio onboarding flow", he: "זרימת קליטה לסטודיו" })}</h2>
           <p className="mt-1 text-sm text-muted">
             {localizedValue(locale, {
